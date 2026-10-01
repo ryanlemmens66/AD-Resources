@@ -899,10 +899,10 @@ ok(!/content:\s*['"]⌄['"]/.test(src) && !/>⌄</.test(src), 'disclosure chevro
     'guidance comparison baseline is recorded from the approved PDF',
     `baseline ${baseline.version || '(missing)'} ${String(baseline.sha256 || '').slice(0, 12)}, approved ${APPROVED_GUIDANCE.version} ${APPROVED_GUIDANCE.sha256.slice(0, 12)}`);
 }
-/* Build 20261002.1. A header Links menu holds the outside pages used across workflows: the St John
+/* v6.3 (working builds 20261002.1-.3). A header Links menu holds the outside pages used across workflows: the St John
    Tasking Board (one reusable side window, never reloaded or read by AirDesk), the Tasking &
    Operating Guidelines and the Master List of Helicopter Information. Both moved, not copied.
-   Build 20261002.3 adds the St John EAS Helicopter Status Board, in its own window like the
+   The St John EAS Helicopter Status Board, in its own window like the
    Tasking Board. Framing either report was tried in test build 20261002.2 and dropped: St John's
    sign-in will not run in a frame, so the panel broke when the session timed out. */
 {

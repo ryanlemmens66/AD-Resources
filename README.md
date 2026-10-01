@@ -4,13 +4,14 @@ A single-file operational desk tool for the Hato Hone St John National Air Desk
 (New Zealand): Primary taskings, interhospital transfer, search and rescue, and
 a live scene map.
 
-> **Status:** v6.2 **Stable Production Baseline**, build `20260930.1`, released
-> 30 September 2026 and signed off by the owner that day for live operational use at
-> <https://airdeskresources.netlify.app/>. It is v6.1 with display fixes, the Closest
-> Known LZ filter and the LZ workbook and guidance comparison tools (see CHANGELOG.md);
-> the live-origin smoke test is recorded below after upload. The immediate
-> rollback release is v6.1 (build `20260928.15`, signed off 2026-09-28,
-> `AD-Resources-v6.1-Stable.zip`), then v6.0, both held unchanged on the owner's
+> **Status:** v6.3 **Stable Production Baseline**, build `20261002.4`, released
+> 2 October 2026 and signed off by the owner that day for live operational use at
+> <https://airdeskresources.netlify.app/>. It is v6.2 with a header Links menu: the
+> St John Tasking Board and EAS Helicopter Status Board in their own windows, and the
+> Tasking & Operating Guidelines and Master List of Helicopter Information moved there
+> (see CHANGELOG.md); the live-origin smoke test is recorded below after upload. The
+> immediate rollback release is v6.2 (build `20260930.1`, signed off 2026-09-30,
+> `AD-Resources-v6.2-Stable.zip`), then v6.1, both held unchanged on the owner's
 > computer. Embedded
 > datasets were last verified 2026-09-24 (`APP.dataVersion` `2026.09.24`); every
 > content and clinical catalogue entry was reviewed by the owner on 2026-09-28.
@@ -20,7 +21,7 @@ a live scene map.
 
 | File | Purpose |
 |---|---|
-| `AirDesk-v6.2.html` | The whole application: markup, styles, scripts, datasets, fonts and the bundled MapLibre GL JS. The deliverable and the source of truth. |
+| `AirDesk-v6.3.html` | The whole application: markup, styles, scripts, datasets, fonts and the bundled MapLibre GL JS. The deliverable and the source of truth. |
 | `sw.js` | Offline shell worker. Caches the HTML only, so a reload during an outage still opens the datasets, reference content and response calculation. |
 | `netlify.toml` | Root rewrite, NZTA same-origin proxy, cache policy, security headers and CSP. |
 | `README.md` | This handbook: deployment, credentials, sign-off. |
@@ -139,8 +140,8 @@ Then follow the release procedure below.
 5. Package the project contents at the ZIP root (no `node_modules`,
    screenshots or temporary files), verify the archive, and record the app
    file's SHA-256 in the sign-off record so the single ZIP carries its own
-   integrity check (`shasum -a 256 AirDesk-v6.2.html`, or `certutil -hashfile
-   AirDesk-v6.2.html SHA256` on Windows).
+   integrity check (`shasum -a 256 AirDesk-v6.3.html`, or `certutil -hashfile
+   AirDesk-v6.3.html SHA256` on Windows).
 6. Upload (*Deployment*), run the live-origin smoke test and complete the
    sign-off record (*Production sign-off*). If the smoke test fails, redeploy
    the previous ZIP (*Rollback*) and record why.
@@ -154,7 +155,7 @@ Then follow the release procedure below.
 ### A. Controls carried forward (confirmed 2026-09-24)
 
 The production owner, **Ryan Lemmens**, confirmed these for the v6.0 freeze.
-v6.1 and v6.2 change none of the keys, origins, provider APIs, Firebase paths, CSP
+v6.1, v6.2 and v6.3 change none of the keys, origins, provider APIs, Firebase paths, CSP
 origins or datasets they cover, so they carry forward. Reconfirm one only if
 its subject changes.
 
@@ -181,8 +182,8 @@ its subject changes.
 ### C. Live-origin smoke test (after upload)
 
 8. Open the **root** production URL and confirm:
-   - **Identity:** the header chip reads **v6.2**; System Status shows build
-     **20260930.1** and baseline *6.2 Stable Production*. On a phone the chip
+   - **Identity:** the header chip reads **v6.3**; System Status shows build
+     **20261002.4** and baseline *6.3 Stable Production*. On a phone the chip
      is hidden by design; the green-dot Desk Status panel shows the build.
    - **Self-check:** System Status → Run Self-check reads *All deployment checks
      passed.* and Secure deployment shows *HTTPS is active.*
@@ -192,6 +193,10 @@ its subject changes.
      fresh in System Status; Scene Weather; NZTA warnings; Heli Status and Shift
      Notes load, and a test note syncs to a second device (then remove it).
    - **Board View, Tasking & Clinical Guidance and CAD outputs** open and copy.
+   - **Links:** Tasking Board and EAS Helicopter Status Board each open in their
+     own window, sign in with a personal St John login and refresh on their own;
+     choosing one again brings its window forward. Tasking & Operating Guidelines
+     and Master List of Helicopter Information open their SharePoint files.
    - **Offline:** after one online load, reload with the network off; the shell,
      reference content and response calculation open. Reconnect and confirm the
      live feeds recover.
@@ -205,23 +210,23 @@ its subject changes.
 
 | Field | Value |
 |---|---|
-| Release | AirDesk v6.2, build `20260930.1`, Stable Production Baseline (v6.1 with display fixes) |
-| Release file | `AD-Resources-v6.2-Stable.zip`, kept on the owner's computer; `AirDesk-v6.2.html` SHA-256 `b1689eccbb888a6763aab1a8be1894e0fa4c353abd452eac752133b9299a4199` |
+| Release | AirDesk v6.3, build `20261002.4`, Stable Production Baseline (v6.2 with the header Links menu) |
+| Release file | `AD-Resources-v6.3-Stable.zip`, kept on the owner's computer; `AirDesk-v6.3.html` SHA-256 `420db227d3fe9c65f360770022102c1aeba7b74bf64b9c738965625cd5e9c76c` |
 | Production URL | <https://airdeskresources.netlify.app/> |
 | A. Controls carried forward | 2026-09-24 |
-| B6. Automated gate | Passed 2026-09-30 (`npm run test:all`, visual comparison reviewed) |
-| B7. Content owner confirmation | Carried forward: no content changed in v6.2. Ryan Lemmens, 2026-09-28: embedded guidance, hospital, LZ, pathway and all catalogue content confirmed current; catalogue review dates recorded as 2026-09-28 |
-| C8. Smoke test and real devices | v6.2: to record after upload (tester, date, devices). Also check the map opens and resets to the whole of New Zealand on the phone, iPad, desktop and Citrix desk, and that Closest Known LZ does not offer Morgan Park. (v6.1: Ryan Lemmens, 2026-09-28, every check in C8 complete.) |
-| Rollback artifact | v6.1 (`AD-Resources-v6.1-Stable.zip`, build `20260928.15`), then the v6.0 ZIP, held unchanged on the owner's computer |
-| Production owner sign-off | Ryan Lemmens, 2026-09-30: v6.2 signed off for live operational use. (v6.1: Ryan Lemmens, 2026-09-28.) |
+| B6. Automated gate | Passed 2026-10-02 (`npm run test:all`, visual comparison against v6.2 reviewed) |
+| B7. Content owner confirmation | Carried forward: no content changed in v6.2 or v6.3 (two existing links moved, unchanged). Ryan Lemmens, 2026-09-28: embedded guidance, hospital, LZ, pathway and all catalogue content confirmed current; catalogue review dates recorded as 2026-09-28 |
+| C8. Smoke test and real devices | v6.3: to record after upload (tester, date, devices). Run every C8 check, including the Links checks on a desk PC and the Citrix desk; also the v6.2 checks, not yet recorded here: the map opens and resets to the whole of New Zealand on the phone, iPad, desktop and Citrix desk, and Closest Known LZ does not offer Morgan Park. (v6.1: Ryan Lemmens, 2026-09-28, every check in C8 complete.) |
+| Rollback artifact | v6.2 (`AD-Resources-v6.2-Stable.zip`, build `20260930.1`), then v6.1 (`AD-Resources-v6.1-Stable.zip`), held unchanged on the owner's computer |
+| Production owner sign-off | Ryan Lemmens, 2026-10-02: v6.3 signed off for live operational use. (v6.2: Ryan Lemmens, 2026-09-30. v6.1: Ryan Lemmens, 2026-09-28.) |
 
 ### Rollback
 
 If the smoke test or live use shows a defect that affects operations, do not
-patch the live copy. Upload the v6.1 ZIP from the owner's computer to the same
+patch the live copy. Upload the v6.2 ZIP from the owner's computer to the same
 Netlify site (or use Netlify's *Publish deploy* on the previous deploy), reload
-every desk once online, and confirm the chip reads v6.1. Record the reason in
-`CHANGELOG.md` and fix forward from the v6.2 ZIP.
+every desk once online, and confirm the chip reads v6.2. Record the reason in
+`CHANGELOG.md` and fix forward from the v6.3 ZIP.
 
 ## Ownership
 

@@ -73,12 +73,12 @@
 
 [[redirects]]
   from = "/"
-  to = "/AirDesk-v6.2.html"
+  to = "/AirDesk-v6.3.html"
   status = 200
 
 [[redirects]]
   from = "/index.html"
-  to = "/AirDesk-v6.2.html"
+  to = "/AirDesk-v6.3.html"
   status = 200
 
 # Same-origin proxy for the NZTA Journeys delays cache.

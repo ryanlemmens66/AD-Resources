@@ -3,49 +3,49 @@
 Full per-build notes for v5.0–v6.1 are preserved in the earlier release ZIPs
 (`AD-Resources-v6.1-Reviewed.zip` and before), kept on the owner's computer.
 
-## v6.2 working build 20261002.3, 2026-10-02 — St John reports in their own windows (not yet signed off)
+## v6.3, 2026-10-02 — Stable Production Baseline (build 20261002.4)
 
-Build 20261002.1 plus a second St John report. No CSP origin changed.
-
-- **EAS Helicopter Status Board** joins the Links menu, after Tasking Board. It opens
-  the St John report (reportviewer.stjohn.org.nz, *EAS Helicopter Status Board*) in its
-  own reusable window, exactly as Tasking Board does; each report keeps its own window.
-  Named *EAS* to keep it distinct from AirDesk's own Heli Status Board.
-- **Not framed.** Test build 20261002.2 showed the Tasking Board inside AirDesk in a
-  panel. It was dropped: St John's sign-in will not run inside a frame, so the panel
-  stopped working when the session timed out. The panel and its `frame-src` /
-  `child-src` origin are removed; a check now fails if either report is framed.
-- **Checks.** The Links menu check covers four items; the window check covers both
-  reports. `npm test` and `npm run browser` pass.
-
-## v6.2 working build 20261002.1, 2026-10-02 — Links menu (not yet signed off)
-
-Working build of v6.2; the stable baseline remains build 20260930.1 until this is
-signed off. No dataset, clinical rule, calculation, CAD wording, provider key,
-Firebase path, storage key or CSP origin changed; `APP.dataVersion` remains `2026.09.24`.
+Signed off by the owner on 2026-10-02 for live operational use. v6.2 with a header
+Links menu; v6.2 (build 20260930.1) is the rollback release. No dataset, clinical
+rule, calculation, CAD wording, provider key, Firebase path, storage key or CSP
+origin changed; `APP.dataVersion` remains `2026.09.24`. Working builds
+20261002.1–.3 were not released.
 
 - **Links menu.** A *Links* button in the header, before Board View, opens a menu of
-  the outside pages used across workflows:
-  - **Tasking Board** opens the St John Air Ambulance Service Tasking Board
-    (reportviewer.stjohn.org.nz) in its own window down the right of the screen; on
-    phones and iPads it opens as a tab. Choosing it again brings the same window to
-    the front rather than opening another. The report refreshes itself every 15 s
-    and each user signs in with their own St John login, so AirDesk never reloads or
-    reads it.
+  outside pages used across workflows:
+  - **Tasking Board** and **EAS Helicopter Status Board**: the St John live reports
+    on reportviewer.stjohn.org.nz. Each opens in its own reusable window down the
+    right of the screen (a tab on phones and iPads); choosing it again brings that
+    window to the front instead of opening another. Each report refreshes itself
+    every 15 s and each user signs in with their own St John login, so AirDesk never
+    reloads, reads or frames them. *EAS* keeps the second distinct from AirDesk's
+    own Heli Status Board.
   - **Tasking & Operating Guidelines** (V2.01, SharePoint), moved from Decision
     Support Tools.
   - **Master List of Helicopter Information** (SharePoint), moved from the
-    *Helicopter Info* button on Helicopter Change Process and renamed.
-  The menu closes on Escape, an outside click, a scroll or a resize, supports arrow
-  keys, stays on screen at phone widths, and is hidden in Board View like Recent
-  Taskings. The System Status note uses the new name. Every other button and link
-  stays where it was.
-- **Checks.** Three static checks: the menu's three items and URLs, the moved links
-  not duplicated in their old places, and the Tasking Board window reused and never
-  reloaded. All three fail on build 20260930.1. `npm test` and `npm run browser`
-  pass (126 static, 66 workflow and 201 browser checks among them).
-- **Version.** `APP.buildId` 20261002.1 and build date 2026-10-02; version, file name
-  and baseline unchanged.
+    *Helicopter Info* button on Helicopter Change Process and renamed; the System
+    Status note uses the new name.
+  Every other button and link stays where it was. The menu supports arrow keys and
+  Escape, closes on an outside click, scroll or resize, stays on screen at phone
+  widths, and is hidden in Board View like Recent Taskings.
+- **Reports are not framed.** Test build 20261002.2 showed the Tasking Board inside
+  AirDesk in a panel. St John's sign-in will not run inside a frame, so the panel
+  broke when the session timed out; it was removed with its CSP origin, and a check
+  now fails if either report is framed.
+- **Header fit.** Up to 820 px wide Links is an icon. At 701–820 px (iPad portrait)
+  the header uses the short name *NAD Resources* and the actions take a second row
+  only when needed; v6.2 squeezed the long name onto three lines there. On phones in
+  the Online state the header is unchanged; while the status reads Degraded or
+  Offline, a 360–390 px phone wraps the actions to a second row.
+- **Audit fix.** Removed an unused variable left in the menu script.
+- **Checks.** Three static checks: the menu's four items and URLs, the moved links
+  not duplicated, and the report windows reused and never reloaded or framed. All
+  three fail on v6.2. `npm run test:all` passes (126 static, 43 runtime, 66
+  workflow, 60 unit and 201 browser checks);
+  the visual comparison changed only the header (all sizes), the Helicopter
+  Change Process heading (Resources), the System Status note and the build number.
+- **Version.** `AirDesk-v6.3.html`, `APP.version` 6.3, baseline *6.3 Stable
+  Production*, package 6.3.0, both Netlify rewrites, and a *What's new* note for 6.3.
 
 ## v6.2, 2026-09-30 — Stable Production Baseline (build 20260930.1)
 

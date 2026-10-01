@@ -54,9 +54,11 @@ signed off by the owner on 2026-09-28 as the Stable Production Baseline for
 official live use, with v6.0 (frozen 2026-09-24) kept on the owner's computer
 as the immediate rollback release. Provider and account controls and the
 TracPlus Worker arrangement were confirmed on 2026-09-24 and carry forward.
-AirDesk v6.2 (build 20260930.1, 30 September 2026) is v6.1 with display fixes and
-is the current release, signed off by the owner on 2026-09-30 for live
-operational use, with v6.1 as its rollback; the sign-off is recorded in README.md.
+AirDesk v6.2 (build 20260930.1, 30 September 2026), v6.1 with display fixes, was
+signed off by the owner on 2026-09-30. AirDesk v6.3 (build 20261002.4, 2 October
+2026) is v6.2 with a header Links menu and is the current release, signed off by
+the owner on 2026-10-02 for live operational use, with v6.2 as its rollback; the
+sign-off is recorded in README.md.
 Content review, live-origin and real-device verification are recorded in the
 README sign-off record.
 
