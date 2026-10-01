@@ -8081,6 +8081,20 @@ button.hpill:hover {
 .links-pop .rs-row:hover, .links-pop .rs-row:focus-visible { background: #f2f7f3; outline: none; }
 body[data-board] #links-menu-wrap { display: none; }
 
+/* Tasking Board panel: the St John report framed inside AirDesk, sliding over the map from the
+   right. Kept loaded while closed so the user's sign-in and the report's own refresh carry on. */
+.tb-panel { position: fixed; right: 0; bottom: 0; z-index: 240; width: min(780px, 100vw); display: flex; flex-direction: column; background: #fff; border-left: 1px solid var(--panel-divider); box-shadow: -18px 0 40px -18px rgba(5,25,12,.45); transform: translateX(0); transition: transform .2s ease, visibility 0s; }
+.tb-panel.is-closed { transform: translateX(100%); visibility: hidden; transition: transform .2s ease, visibility 0s .2s; }
+.tb-head { display: flex; align-items: center; gap: 8px; padding: 8px 10px 8px 14px; border-bottom: 1px solid var(--panel-divider); background: #f7faf8; }
+.tb-head strong { flex: 1; min-width: 0; font-size: 13px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tb-head button { font: inherit; font-size: 12px; font-weight: 700; border-radius: 999px; border: 1px solid var(--panel-divider); background: #fff; color: var(--ink); padding: 5px 12px; cursor: pointer; }
+.tb-head button:hover { background: #eef5f0; }
+.tb-head .tb-close { width: 30px; height: 30px; padding: 0; font-size: 18px; line-height: 1; }
+.tb-help { margin: 0; padding: 6px 14px; font-size: 11px; color: var(--muted); border-bottom: 1px solid #eef3ef; }
+.tb-panel iframe { flex: 1; width: 100%; border: 0; background: #fff; }
+body[data-board] .tb-panel { display: none; }
+@media (prefers-reduced-motion: reduce) { .tb-panel, .tb-panel.is-closed { transition: none; } }
+
 /* Card heading badges: sheen square with Lucide glyphs. */
 .cicon {
   width: 28px;
@@ -9762,7 +9776,7 @@ return maplibregl$1;
     channel: 'production',
     baseline: '6.2 Stable Production',
     buildDate: '2026-10-02',
-    buildId: '20261002.1',
+    buildId: '20261002.2',
     dataVersion: '2026.09.24',
     storagePrefix: 'airdesk-next'
   });
@@ -24424,11 +24438,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 else boot();
 })();
 </script>
+<aside class="tb-panel is-closed" id="tb-panel" aria-label="Tasking Board" aria-hidden="true"><div class="tb-head"><strong>Air Ambulance Service Tasking Board</strong><button type="button" id="tb-popout">Pop out ↗</button><button type="button" class="tb-close" id="tb-close" aria-label="Close Tasking Board">×</button></div><p class="tb-help">Blank, "refused to connect" or a sign-in that keeps coming back? Use <b>Pop out</b>.</p><iframe id="tb-frame" title="Air Ambulance Service Tasking Board" referrerpolicy="strict-origin-when-cross-origin"></iframe></aside>
 <script id="airdesk-links-menu">
 (()=>{'use strict';
 const btn=document.getElementById('links-btn'),menu=document.getElementById('links-menu');
 if(!btn||!menu)return;
-let board=null;
 const items=()=>[...menu.querySelectorAll('[role="menuitem"]')];
 function setOpen(open,focusFirst){
   menu.hidden=!open;btn.setAttribute('aria-expanded',String(open));
@@ -24455,18 +24469,41 @@ menu.addEventListener('click',e=>{
   const a=e.target.closest('a');if(!a)return;
   setOpen(false);
   if(a.id!=='link-tasking-board')return;
-  /* The report refreshes itself every 15 s and each user signs in with their
-     own St John login, so AirDesk only opens the window and brings it back to
-     the front; it never reloads or reads it. Desktop gets a window down the
-     right of the screen; phones and iPads open it as a tab. */
   e.preventDefault();
+  openPanel(a.href);
+});
+
+/* Tasking Board. The report refreshes itself every 15 s and each user signs in with their own
+   St John login, so AirDesk only shows it -- framed in the panel, or popped out to one reusable
+   window down the right of the screen (a tab on phones and iPads). It never reloads or reads it. */
+const panel=document.getElementById('tb-panel'),frame=document.getElementById('tb-frame');
+const BOARD_URL=document.getElementById('link-tasking-board').href;
+let board=null,returnFocus=null;
+function openPanel(url){
+  const header=document.querySelector('.header');
+  panel.style.top=`${Math.round(header?header.getBoundingClientRect().bottom:0)}px`;
+  if(!frame.getAttribute('src'))frame.setAttribute('src',url);
+  returnFocus=btn;
+  panel.classList.remove('is-closed');panel.setAttribute('aria-hidden','false');
+  document.getElementById('tb-close').focus();
+}
+function closePanel(){
+  if(panel.classList.contains('is-closed'))return;
+  panel.classList.add('is-closed');panel.setAttribute('aria-hidden','true');
+  returnFocus?.focus();
+}
+function popOut(){
+  closePanel();
   if(board&&!board.closed){board.focus();return;}
   const sc=window.screen,w=Math.min(780,sc.availWidth),h=sc.availHeight;
   const left=(sc.availLeft||0)+sc.availWidth-w,top=sc.availTop||0;
-  board=window.open(a.href,'airdesk-tasking-board',`popup,width=${w},height=${h},left=${left},top=${top}`);
+  board=window.open(BOARD_URL,'airdesk-tasking-board',`popup,width=${w},height=${h},left=${left},top=${top}`);
   if(board){try{board.opener=null;}catch(_){}}
-  else window.open(a.href,'_blank','noopener');
-});
+  else window.open(BOARD_URL,'_blank','noopener');
+}
+document.getElementById('tb-close').addEventListener('click',closePanel);
+document.getElementById('tb-popout').addEventListener('click',popOut);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.classList.contains('is-closed')&&!e.defaultPrevented)closePanel();});
 })();
 </script>
 <script id="airdesk-decision-support">

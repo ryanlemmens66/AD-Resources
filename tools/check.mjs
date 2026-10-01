@@ -915,6 +915,11 @@ ok(!/content:\s*['"]⌄['"]/.test(src) && !/>⌄</.test(src), 'disclosure chevro
     'moved links are not duplicated in Decision Support Tools or Helicopter Change Process');
   ok(/if\(board&&!board\.closed\)\{board\.focus\(\);return;\}/.test(src) && !/board\.location/.test(src),
     'Tasking Board reuses its window and is never reloaded by AirDesk');
+  // Build 20261002.2 (test): Tasking Board opens framed in a panel, with Pop out to the window.
+  ok(/<iframe id="tb-frame"/.test(src) && /id="tb-popout"/.test(src)
+     && /frame-src[^;]*https:\/\/reportviewer\.stjohn\.org\.nz/.test(csp)
+     && /if\(!frame\.getAttribute\('src'\)\)frame\.setAttribute\('src',url\)/.test(src),
+    'Tasking Board panel frames the report once (CSP frame-src allows it) and can pop out');
 }
 ok(/NOT_OFFERED_STATUS=new Set\(\['Inactive','Expired'\]\)/.test(src) && /knownLZ\(\)\.filter\(offeredLZ\)/.test(src)
    && /operationalPriority!=='Do not use'/.test(src),

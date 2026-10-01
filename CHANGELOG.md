@@ -3,6 +3,24 @@
 Full per-build notes for v5.0–v6.1 are preserved in the earlier release ZIPs
 (`AD-Resources-v6.1-Reviewed.zip` and before), kept on the owner's computer.
 
+## v6.2 test build 20261002.2, 2026-10-02 — Tasking Board in a panel (for a preview deploy only)
+
+Build 20261002.1 with one change, to find out whether the St John report can be shown
+inside AirDesk. Deploy it to a Netlify draft or preview deploy, not production.
+
+- **Tasking Board** (Links menu) now opens the report framed in a panel that slides
+  over the map from the right. The panel stays loaded when closed, so the sign-in and
+  the report's own 15 s refresh carry on. *Pop out ↗* closes the panel and opens the
+  reusable side window from build 20261002.1. Escape or × closes the panel; Board View
+  hides it.
+- **CSP.** `frame-src` and `child-src` allow `https://reportviewer.stjohn.org.nz`.
+- **Test result decides what ships.** If the report loads in the panel and sign-in
+  holds, keep this build. If the panel is blank, says the page refused to connect, or
+  keeps returning to sign-in, St John's server or the browser does not allow it to
+  be framed; return to build 20261002.1 (window only) and remove the CSP origin.
+- **Checks.** One static check for the panel, the pop-out and the CSP origin.
+  `npm test` and `npm run browser` pass (127 static and 201 browser checks among them).
+
 ## v6.2 working build 20261002.1, 2026-10-02 — Links menu (not yet signed off)
 
 Working build of v6.2; the stable baseline remains build 20260930.1 until this is
