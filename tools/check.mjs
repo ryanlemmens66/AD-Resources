@@ -901,20 +901,26 @@ ok(!/content:\s*['"]⌄['"]/.test(src) && !/>⌄</.test(src), 'disclosure chevro
 }
 /* Build 20261002.1. A header Links menu holds the outside pages used across workflows: the St John
    Tasking Board (one reusable side window, never reloaded or read by AirDesk), the Tasking &
-   Operating Guidelines and the Master List of Helicopter Information. Both moved, not copied. */
+   Operating Guidelines and the Master List of Helicopter Information. Both moved, not copied.
+   Build 20261002.3 adds the St John EAS Helicopter Status Board, in its own window like the
+   Tasking Board. Framing either report was tried in test build 20261002.2 and dropped: St John's
+   sign-in will not run in a frame, so the panel broke when the session timed out. */
 {
   const menu = /<div class="links-pop[^"]*" id="links-menu"[\s\S]*?<\/div><\/div>/.exec(src)?.[0] || '';
   const titles = [...menu.matchAll(/class="rs-title">([^<]+)</g)].map(m => m[1]);
+  const menuJs = /<script id="airdesk-links-menu">[\s\S]*?<\/script>/.exec(src)?.[0] || '';
   const support = /const LINKS=\[[\s\S]*?\n\];/.exec(src)?.[0] || '';
-  ok(titles.join('|') === 'Tasking Board|Tasking &amp; Operating Guidelines|Master List of Helicopter Information'
+  ok(titles.join('|') === 'Tasking Board|EAS Helicopter Status Board|Tasking &amp; Operating Guidelines|Master List of Helicopter Information'
      && /reportviewer\.stjohn\.org\.nz\/Reports\/eacc\/realtime\/Report\.aspx\?r=Aeromedical\+Tasking\+Dashboard/.test(menu)
-     && (menu.match(/rel="noopener noreferrer"/g) || []).length === 3,
-    'header Links menu lists Tasking Board, Tasking & Operating Guidelines and Master List of Helicopter Information',
+     && /reportviewer\.stjohn\.org\.nz\/Reports\/eacc\/realtime\/Report\.aspx\?r=EAS\+Helicopter\+Status\+Board/.test(menu)
+     && (menu.match(/rel="noopener noreferrer"/g) || []).length === 4,
+    'header Links menu lists Tasking Board, EAS Helicopter Status Board, Tasking & Operating Guidelines and Master List of Helicopter Information',
     `menu: ${titles.join(', ') || '(missing)'}`);
   ok(!/Operating Guidelines/.test(support) && !/id="master-heli-info-pill"/.test(src),
     'moved links are not duplicated in Decision Support Tools or Helicopter Change Process');
-  ok(/if\(board&&!board\.closed\)\{board\.focus\(\);return;\}/.test(src) && !/board\.location/.test(src),
-    'Tasking Board reuses its window and is never reloaded by AirDesk');
+  ok(/if\(open&&!open\.closed\)\{open\.focus\(\);return;\}/.test(src) && !/\.location\s*=/.test(menuJs)
+     && !/<iframe[^>]*reportviewer|frame-src[^;]*reportviewer/.test(src + csp),
+    'St John reports reuse one window each, are never reloaded by AirDesk and are never framed');
 }
 ok(/NOT_OFFERED_STATUS=new Set\(\['Inactive','Expired'\]\)/.test(src) && /knownLZ\(\)\.filter\(offeredLZ\)/.test(src)
    && /operationalPriority!=='Do not use'/.test(src),

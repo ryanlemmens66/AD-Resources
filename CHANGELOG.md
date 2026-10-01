@@ -3,6 +3,21 @@
 Full per-build notes for v5.0–v6.1 are preserved in the earlier release ZIPs
 (`AD-Resources-v6.1-Reviewed.zip` and before), kept on the owner's computer.
 
+## v6.2 working build 20261002.3, 2026-10-02 — St John reports in their own windows (not yet signed off)
+
+Build 20261002.1 plus a second St John report. No CSP origin changed.
+
+- **EAS Helicopter Status Board** joins the Links menu, after Tasking Board. It opens
+  the St John report (reportviewer.stjohn.org.nz, *EAS Helicopter Status Board*) in its
+  own reusable window, exactly as Tasking Board does; each report keeps its own window.
+  Named *EAS* to keep it distinct from AirDesk's own Heli Status Board.
+- **Not framed.** Test build 20261002.2 showed the Tasking Board inside AirDesk in a
+  panel. It was dropped: St John's sign-in will not run inside a frame, so the panel
+  stopped working when the session timed out. The panel and its `frame-src` /
+  `child-src` origin are removed; a check now fails if either report is framed.
+- **Checks.** The Links menu check covers four items; the window check covers both
+  reports. `npm test` and `npm run browser` pass.
+
 ## v6.2 working build 20261002.1, 2026-10-02 — Links menu (not yet signed off)
 
 Working build of v6.2; the stable baseline remains build 20260930.1 until this is
