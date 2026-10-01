@@ -4,7 +4,7 @@
   Working release: v6.2
   Stable production baseline: v6.2 (build 20260930.1, 2026-09-30)
   Immediate rollback release: v6.1 (build 20260928.15)
-  Build date: 2026-09-30
+  Build date: 2026-10-02
 
   One self-contained file: markup, styles, scripts, embedded datasets, fonts
   and the bundled MapLibre GL JS 4.5.0. Deploy it with sw.js (offline shell)
@@ -8072,6 +8072,15 @@ button.hpill:hover {
   box-shadow: var(--action-shadow-hover);
 }
 
+/* Links menu: the header's one dropdown, for outside pages used across workflows. */
+.links-menu { position: relative; display: inline-flex; }
+.links-caret { width: 5px; height: 5px; margin: -3px 0 0 2px; border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg); transition: transform .15s ease, margin .15s ease; }
+#links-btn[aria-expanded="true"] .links-caret { margin-top: 2px; transform: rotate(-135deg); }
+.links-pop { position: fixed; z-index: 60; width: 320px; max-width: calc(100vw - 24px); margin-top: 0; box-shadow: 0 14px 34px -8px rgba(5,25,12,.45); }
+.links-pop[hidden] { display: none; }
+.links-pop .rs-row:hover, .links-pop .rs-row:focus-visible { background: #f2f7f3; outline: none; }
+body[data-board] #links-menu-wrap { display: none; }
+
 /* Card heading badges: sheen square with Lucide glyphs. */
 .cicon {
   width: 28px;
@@ -9532,7 +9541,7 @@ html[data-airdesk-performance="citrix"] :is(
 })();
 </script>
 <div class="app">
-<header class="header"><div class="brand"><div class="brand-mark"><svg fill="none" stroke="white" stroke-linecap="round" viewbox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.6" stroke-width="1.8"></circle><path d="M8.6 7.4v9.2M15.4 7.4v9.2M8.6 12h6.8" stroke-width="2.3" stroke-linecap="butt"></path></svg></div><div><h1 class="brand-title"><span class="brand-long">National Air Desk Resources</span><span class="brand-abbr">NAD Resources</span></h1><div class="brand-sub">HATO HONE ST JOHN <button class="brand-version" data-modal="system-status" id="build-version" title="Open system status" type="button">v6.2</button></div></div></div><div class="header-status"><button type="button" class="hpill health connecting" id="airdesk-health-chip" title="Checking feeds…" aria-label="Desk status"><span>Connecting</span></button><span class="hpill watch" id="duty-pill"><svg aria-hidden="true" class="duty-icon sun" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.35" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg><span class="duty-label">Brown Day</span></span></div><div class="header-actions"><button class="hpill" id="board-view" type="button" aria-pressed="false">Board View</button><button class="hpill" id="recent" type="button">Recent Taskings</button><button class="hpill reset" id="reset" type="button">Reset Forms</button></div></header>
+<header class="header"><div class="brand"><div class="brand-mark"><svg fill="none" stroke="white" stroke-linecap="round" viewbox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.6" stroke-width="1.8"></circle><path d="M8.6 7.4v9.2M15.4 7.4v9.2M8.6 12h6.8" stroke-width="2.3" stroke-linecap="butt"></path></svg></div><div><h1 class="brand-title"><span class="brand-long">National Air Desk Resources</span><span class="brand-abbr">NAD Resources</span></h1><div class="brand-sub">HATO HONE ST JOHN <button class="brand-version" data-modal="system-status" id="build-version" title="Open system status" type="button">v6.2</button></div></div></div><div class="header-status"><button type="button" class="hpill health connecting" id="airdesk-health-chip" title="Checking feeds…" aria-label="Desk status"><span>Connecting</span></button><span class="hpill watch" id="duty-pill"><svg aria-hidden="true" class="duty-icon sun" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.35" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg><span class="duty-label">Brown Day</span></span></div><div class="header-actions"><div class="links-menu" id="links-menu-wrap"><button class="hpill" id="links-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="links-menu">Links<span class="links-caret" aria-hidden="true"></span></button><div class="links-pop rs-group" id="links-menu" role="menu" aria-label="Links" hidden=""><a class="rs-row" role="menuitem" id="link-tasking-board" href="https://reportviewer.stjohn.org.nz/Reports/eacc/realtime/Report.aspx?r=Aeromedical+Tasking+Dashboard" target="airdesk-tasking-board" rel="noopener noreferrer"><span class="rs-icon" style="background:#8f2f2a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 13h10M7 16h6"/></svg></span><span class="rs-copy"><span class="rs-title">Tasking Board</span><span class="rs-sub">St John report · opens in its own window</span></span><span class="rs-chevron">↗</span></a><a class="rs-row" role="menuitem" href="https://stjohnnz.sharepoint.com/sites/AirDesk2/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAirDesk2%2FShared%20Documents%2FAir%20Desk%20Operations%2FTasking%20Guidlines%2FNational%20Air%20Desk%20Tasking%20%26%20Operating%20Guidelines%20%2D%20Version%202%2E01%2015%20May%2026%2Epdf&parent=%2Fsites%2FAirDesk2%2FShared%20Documents%2FAir%20Desk%20Operations%2FTasking%20Guidlines" target="_blank" rel="noopener noreferrer"><span class="rs-icon" style="background:#1c5c34"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7Z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></span><span class="rs-copy"><span class="rs-title">Tasking &amp; Operating Guidelines</span><span class="rs-sub">Version 2.01 · SharePoint</span></span><span class="rs-chevron">↗</span></a><a class="rs-row" role="menuitem" id="link-master-heli-info" href="https://stjohnnz.sharepoint.com/:x:/r/sites/AirDesk2/_layouts/15/Doc.aspx?sourcedoc=%7BE3B7E2D5-2E65-4149-8E0C-522C57E50A52%7D&file=Master%20List%20of%20Helicopter%20Information.xlsx&action=default&mobileredirect=true&cid=dac7716e-9ab8-4dfd-82cb-27e7c23b46d0&web=1" target="_blank" rel="noopener noreferrer"><span class="rs-icon" style="background:#2f6b8f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg></span><span class="rs-copy"><span class="rs-title">Master List of Helicopter Information</span><span class="rs-sub">SharePoint spreadsheet</span></span><span class="rs-chevron">↗</span></a></div></div><button class="hpill" id="board-view" type="button" aria-pressed="false">Board View</button><button class="hpill" id="recent" type="button">Recent Taskings</button><button class="hpill reset" id="reset" type="button">Reset Forms</button></div></header>
 <main class="workspace" id="workspace"><section class="board-pane" id="board-pane" aria-label="Fleet board" hidden><div id="board-fleet"></div></section><div class="board-notes-splitter" id="board-notes-splitter" hidden role="separator" aria-orientation="horizontal" aria-label="Resize helicopter board and shift notes" aria-valuemin="14" aria-valuemax="60" tabindex="0"></div><section class="board-notes" id="board-notes" aria-label="Shift notes" hidden></section><div class="board-splitter" id="board-splitter" hidden role="separator" aria-orientation="vertical" aria-label="Resize board and maps" tabindex="0"></div><section class="left"><div class="nav"><div class="tabs" role="tablist">
 <button aria-controls="screen-primary" aria-selected="true" class="tab active" data-screen="primary" id="tab-primary" role="tab" tabindex="0" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span>Primary</span></button>
 <button aria-controls="screen-iht" aria-selected="false" class="tab" data-screen="iht" id="tab-iht" role="tab" tabindex="-1" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg><span>Transfers</span></button>
@@ -9622,7 +9631,7 @@ html[data-airdesk-performance="citrix"] :is(
 <!-- RESOURCES -->
 <section aria-labelledby="tab-resources" class="screen" hidden="" id="screen-resources" role="tabpanel" tabindex="0"><div class="stack">
 <section class="shift"><div class="chead mobile-action-header"><span class="cicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><div class="ctitle" role="heading" aria-level="2">Shift Notes</div><div class="oncall-inline" id="shift-notes-oncall-inline" title="On-call doctor and period"><span class="oncall-prefix">On call</span><span class="oncall-display" id="shift-notes-oncall-display"></span></div><div class="head-actions"><button class="rs-pill rs-pill-amber" data-document-id="daily-duties" data-modal="duties" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="4" width="10" height="16" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg> Daily Duties</button><button class="rs-pill" data-document-id="clinical-advice" data-modal="clinical-advice" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z"/></svg> Clinical Advice</button></div></div><div class="cbody"><div class="shift-meta shift-details"><span class="label">Today's Date</span><div class="shift-date" id="shift-notes-date"></div><div class="grid2 row"><label><span class="label">On-call Doctor</span><input class="control" id="shift-notes-oncall-doctor" placeholder="On-call doctor"/></label><label><span class="label">On-call Period</span><input class="control" id="shift-notes-oncall-period" placeholder="e.g. Mon 0700 – Mon 0700"/></label></div></div><label class="label shift-notes-label" for="shift-notes-text">Shift notes</label><textarea class="shift-notes" id="shift-notes-text" placeholder="Add handover notes..."></textarea></div></section><div aria-label="Resize shift notes" aria-orientation="horizontal" aria-valuemax="640" aria-valuemin="90" class="notes-resize-handle" id="shift-notes-resize" role="separator" tabindex="0" title="Drag to resize"></div>
-<div class="accordion"><div class="ahead"><span class="cicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h20"/><path d="M12 5v2"/><path d="M5 17h9a4 4 0 0 0 4-4v-1a5 5 0 0 0-5-5H9a4 4 0 0 0-4 4z"/><path d="M18 12h3"/><path d="M21 10v4"/><path d="M8 17v2"/><path d="M13 17v2"/><path d="M6 19h9"/></svg></span><div class="ctitle" role="heading" aria-level="2">Helicopter Change Process</div><div class="head-actions"><a class="rs-pill" id="master-heli-info-pill" href="https://stjohnnz.sharepoint.com/:x:/r/sites/AirDesk2/_layouts/15/Doc.aspx?sourcedoc=%7BE3B7E2D5-2E65-4149-8E0C-522C57E50A52%7D&file=Master%20List%20of%20Helicopter%20Information.xlsx&action=default&mobileredirect=true&cid=dac7716e-9ab8-4dfd-82cb-27e7c23b46d0&web=1" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7Z"/><path d="M14 3v5h5"/></svg> Helicopter Info</a></div></div><div class="abody" hidden="" id="heli-change-body"></div></div>
+<div class="accordion"><div class="ahead"><span class="cicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h20"/><path d="M12 5v2"/><path d="M5 17h9a4 4 0 0 0 4-4v-1a5 5 0 0 0-5-5H9a4 4 0 0 0-4 4z"/><path d="M18 12h3"/><path d="M21 10v4"/><path d="M8 17v2"/><path d="M13 17v2"/><path d="M6 19h9"/></svg></span><div class="ctitle" role="heading" aria-level="2">Helicopter Change Process</div></div><div class="abody" hidden="" id="heli-change-body"></div></div>
 <div class="accordion"><div class="ahead"><span class="cicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg></span><div class="ctitle" role="heading" aria-level="2">CAD Short Codes</div></div><div class="abody" hidden="" id="cad-codes-body"><div class="seg" role="tablist" aria-label="CAD code set">
   <button type="button" class="seg-btn is-on" id="cad-tab-airdesk-btn">Air Desk</button>
   <button type="button" class="seg-btn" id="cad-tab-clinical-btn">Secondary Triage</button>
@@ -9752,8 +9761,8 @@ return maplibregl$1;
     version: '6.2',
     channel: 'production',
     baseline: '6.2 Stable Production',
-    buildDate: '2026-09-30',
-    buildId: '20260930.1',
+    buildDate: '2026-10-02',
+    buildId: '20261002.1',
     dataVersion: '2026.09.24',
     storagePrefix: 'airdesk-next'
   });
@@ -11282,7 +11291,7 @@ return maplibregl$1;
           '<b>No TracPlus fix is treated as On Base.</b> That is the pad heuristic. A dead tracker in the field will look the same.<br>' +
           '<b>Firebase syncs Heli Status and Shift Notes</b> across desks. Recents and form drafts stay in this browser.<br>' +
           '<b>Shift Notes are shared across desks.</b> Do not enter patient-identifiable information.<br>' +
-          '<b>Master Helicopter Information</b> opens the SharePoint spreadsheet; it is not an in-app register.' +
+          '<b>Master List of Helicopter Information</b> (Links menu) opens the SharePoint spreadsheet; it is not an in-app register.' +
         '</div>' +
         '<h3>Configuration</h3>' +
         '<div class="optional-line"><span>LINZ basemap key</span><span>' + escapeHtml(maskKey(linzKey)) + '</span></div>' +
@@ -24415,13 +24424,57 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 else boot();
 })();
 </script>
+<script id="airdesk-links-menu">
+(()=>{'use strict';
+const btn=document.getElementById('links-btn'),menu=document.getElementById('links-menu');
+if(!btn||!menu)return;
+let board=null;
+const items=()=>[...menu.querySelectorAll('[role="menuitem"]')];
+function setOpen(open,focusFirst){
+  menu.hidden=!open;btn.setAttribute('aria-expanded',String(open));
+  if(open){
+    /* Under the button, kept on screen at phone widths. */
+    const r=btn.getBoundingClientRect(),w=menu.offsetWidth;
+    menu.style.top=`${Math.round(r.bottom+8)}px`;
+    menu.style.left=`${Math.round(Math.max(12,Math.min(r.left,innerWidth-12-w)))}px`;
+  }
+  if(open&&focusFirst)items()[0]?.focus();
+}
+btn.addEventListener('click',()=>setOpen(menu.hidden,false));
+btn.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();setOpen(true,true);}});
+menu.addEventListener('keydown',e=>{
+  const list=items(),i=list.indexOf(document.activeElement);
+  if(e.key==='ArrowDown'){e.preventDefault();list[(i+1)%list.length].focus();}
+  else if(e.key==='ArrowUp'){e.preventDefault();list[(i-1+list.length)%list.length].focus();}
+  else if(e.key==='Tab')setOpen(false);
+});
+document.addEventListener('click',e=>{if(!menu.hidden&&!e.target.closest('#links-menu-wrap'))setOpen(false);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){e.preventDefault();setOpen(false);btn.focus();}});
+for(const ev of ['resize','scroll'])addEventListener(ev,()=>{if(!menu.hidden)setOpen(false);},{passive:true,capture:true});
+menu.addEventListener('click',e=>{
+  const a=e.target.closest('a');if(!a)return;
+  setOpen(false);
+  if(a.id!=='link-tasking-board')return;
+  /* The report refreshes itself every 15 s and each user signs in with their
+     own St John login, so AirDesk only opens the window and brings it back to
+     the front; it never reloads or reads it. Desktop gets a window down the
+     right of the screen; phones and iPads open it as a tab. */
+  e.preventDefault();
+  if(board&&!board.closed){board.focus();return;}
+  const sc=window.screen,w=Math.min(780,sc.availWidth),h=sc.availHeight;
+  const left=(sc.availLeft||0)+sc.availWidth-w,top=sc.availTop||0;
+  board=window.open(a.href,'airdesk-tasking-board',`popup,width=${w},height=${h},left=${left},top=${top}`);
+  if(board){try{board.opener=null;}catch(_){}}
+  else window.open(a.href,'_blank','noopener');
+});
+})();
+</script>
 <script id="airdesk-decision-support">
 (()=>{'use strict';
 const $=AirDesk.util.byId;
 
 /* Real reference links, ported directly from the operational app. */
 const LINKS=[
-  {title:'Tasking &amp; Operating Guidelines',sub:'Version 2.01 · SharePoint',href:'https://stjohnnz.sharepoint.com/sites/AirDesk2/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAirDesk2%2FShared%20Documents%2FAir%20Desk%20Operations%2FTasking%20Guidlines%2FNational%20Air%20Desk%20Tasking%20%26%20Operating%20Guidelines%20%2D%20Version%202%2E01%2015%20May%2026%2Epdf&parent=%2Fsites%2FAirDesk2%2FShared%20Documents%2FAir%20Desk%20Operations%2FTasking%20Guidlines',icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7Z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>`,color:'#1c5c34'},
   {title:'NZ Clinical Practice Guidelines',sub:'cpg.stjohn.org.nz',href:'https://cpg.stjohn.org.nz/tabs/guidelines',icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3H19v16H7.5A2.5 2.5 0 0 0 5 21.5Z"/><path d="M5 5.5v16"/></svg>`,color:'#1c5c34'},
   {title:'Manchester Triage Tool',sub:'MTA TTA NZ V 9.05 · SharePoint',href:'https://stjohnnz.sharepoint.com/sites/ClinicalDesk/Shared%20Documents/Forms/AllItems.aspx?viewid=de5645d0%2D7cbb%2D4d42%2Da241%2D0ef77f8bf920&id=%2Fsites%2FClinicalDesk%2FShared%20Documents%2FTraining%2FMTA%20TTA%20NZ%20V%209%2E05%2Epdf&parent=%2Fsites%2FClinicalDesk%2FShared%20Documents%2FTraining',icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7Z"/><path d="M14 3v5h5"/></svg>`,color:'#7a4e16'},
   {title:'Early Warning Score Calculator',sub:'cpg.stjohn.org.nz · EWS Tool',href:'https://cpg.stjohn.org.nz/tabs/tools/page/ews-calculator',icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19h16"/><path d="M7 16v-4M12 16V8M17 16v-7"/></svg>`,color:'#1d4f7a'},

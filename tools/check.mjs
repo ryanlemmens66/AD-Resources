@@ -899,6 +899,23 @@ ok(!/content:\s*['"]⌄['"]/.test(src) && !/>⌄</.test(src), 'disclosure chevro
     'guidance comparison baseline is recorded from the approved PDF',
     `baseline ${baseline.version || '(missing)'} ${String(baseline.sha256 || '').slice(0, 12)}, approved ${APPROVED_GUIDANCE.version} ${APPROVED_GUIDANCE.sha256.slice(0, 12)}`);
 }
+/* Build 20261002.1. A header Links menu holds the outside pages used across workflows: the St John
+   Tasking Board (one reusable side window, never reloaded or read by AirDesk), the Tasking &
+   Operating Guidelines and the Master List of Helicopter Information. Both moved, not copied. */
+{
+  const menu = /<div class="links-pop[^"]*" id="links-menu"[\s\S]*?<\/div><\/div>/.exec(src)?.[0] || '';
+  const titles = [...menu.matchAll(/class="rs-title">([^<]+)</g)].map(m => m[1]);
+  const support = /const LINKS=\[[\s\S]*?\n\];/.exec(src)?.[0] || '';
+  ok(titles.join('|') === 'Tasking Board|Tasking &amp; Operating Guidelines|Master List of Helicopter Information'
+     && /reportviewer\.stjohn\.org\.nz\/Reports\/eacc\/realtime\/Report\.aspx\?r=Aeromedical\+Tasking\+Dashboard/.test(menu)
+     && (menu.match(/rel="noopener noreferrer"/g) || []).length === 3,
+    'header Links menu lists Tasking Board, Tasking & Operating Guidelines and Master List of Helicopter Information',
+    `menu: ${titles.join(', ') || '(missing)'}`);
+  ok(!/Operating Guidelines/.test(support) && !/id="master-heli-info-pill"/.test(src),
+    'moved links are not duplicated in Decision Support Tools or Helicopter Change Process');
+  ok(/if\(board&&!board\.closed\)\{board\.focus\(\);return;\}/.test(src) && !/board\.location/.test(src),
+    'Tasking Board reuses its window and is never reloaded by AirDesk');
+}
 ok(/NOT_OFFERED_STATUS=new Set\(\['Inactive','Expired'\]\)/.test(src) && /knownLZ\(\)\.filter\(offeredLZ\)/.test(src)
    && /operationalPriority!=='Do not use'/.test(src),
   'Closest Known LZ leaves out Inactive, Expired and "Do not use" sites');
