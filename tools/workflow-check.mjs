@@ -1,0 +1,133 @@
+import {readFileSync} from 'node:fs';
+import {JSDOM,VirtualConsole} from 'jsdom';
+import assert from 'node:assert/strict';
+import {APP_FILE} from './lib.mjs';
+const dom=new JSDOM(readFileSync(APP_FILE,'utf8'),{runScripts:'dangerously',pretendToBeVisual:true,url:'http://localhost/',virtualConsole:new VirtualConsole()});
+await new Promise(r=>setTimeout(r,13000));
+const w=dom.window,d=w.document,A=w.AirDesk;let count=0;
+const check=(name,fn)=>{fn();console.log('PASS '+name);count++};
+try {
+ for(const tab of d.querySelectorAll('[role="tab"]')){tab.click();check('navigation '+tab.textContent.trim(),()=>{assert.equal(tab.getAttribute('aria-selected'),'true');const panel=d.getElementById(tab.getAttribute('aria-controls'));if(panel)assert.equal(panel.hidden,false)})}
+ for(const kind of ['duties','clinical-advice','keyq','coord']){const trigger=d.querySelector(`[data-document-id="${kind==='duties'?'daily-duties':kind}"], [data-modal="${kind}"]`);trigger.click();check('reference dialog '+kind,()=>{assert.equal(d.getElementById('modal').hidden,false);assert.ok(d.getElementById('modal-body').textContent.trim().length>50)});A.ui.closeModal();check('dialog closes '+kind,()=>assert.equal(d.getElementById('modal').hidden,true))}
+ const R=A.primary.responseBreakdown;
+ R.openBreakdown();check('calculation requires scene',()=>assert.match(d.getElementById('modal-body').textContent,/Scene Location first/));A.ui.closeModal();
+ const auto={heliTakeoff:5,heliFlightToScene:10,heliFlightToHosp:20,helipadToED:3,roadToScene:12,roadToHosp:30,roadToHospIsEstimate:false};
+ const eta=d.getElementById('primary-eta-scene');eta.value='12';
+ R.refresh([174.76,-36.85],auto);
+ check('helicopter arithmetic',()=>assert.equal(R.getJobTotals().heliTotal,38+A.rules.response.helicopterSceneMinutes));
+ check('road arithmetic',()=>assert.equal(R.getJobTotals().roadTotal,42+A.rules.response.roadResponseDelayMinutes+A.rules.response.roadSceneMinutes+A.rules.response.roadClinicalInterceptMinutes));
+ R.openBreakdown();const input=d.getElementById('rbd-heli-delay');
+ input.value='7.5';input.dispatchEvent(new w.Event('input',{bubbles:true}));check('editable delay updates total',()=>assert.equal(R.getJobTotals().heliResponseDelay,7.5));
+ input.value='-1';input.dispatchEvent(new w.Event('input',{bubbles:true}));check('negative time shows inline error',()=>{assert.equal(input.getAttribute('aria-invalid'),'true');assert.equal(d.getElementById(input.id+'-error').hidden,false)});
+ input.value='0';input.dispatchEvent(new w.Event('input',{bubbles:true}));check('zero time accepted and error clears',()=>{assert.equal(input.getAttribute('aria-invalid'),'false');assert.equal(R.getJobTotals().heliResponseDelay,0)});
+ const road=d.getElementById('rbd-road-transport');
+ const editRoad=value=>{road.value=value;road.dispatchEvent(new w.Event('input',{bubbles:true}))};
+ check('road time automatically populated',()=>assert.equal(road.value,'30'));
+ editRoad('45');check('road override updates total',()=>assert.equal(R.getJobTotals().roadToHosp,45));
+ R.refresh([174.76,-36.85],{...auto,roadToHosp:35,roadToHospIsEstimate:true});
+ check('route refresh preserves override',()=>{assert.equal(R.getJobTotals().roadToHosp,45);assert.equal(R.getJobTotals().roadToHospIsEstimate,false)});
+ d.getElementById('rbd-road-auto').click();
+ check('restore uses latest automatic route',()=>{assert.equal(road.value,'35');assert.equal(R.getJobTotals().roadToHospIsEstimate,true)});
+ editRoad('0');check('zero road override accepted',()=>assert.equal(R.getJobTotals().roadToHosp,0));
+ editRoad('-1');check('negative road override rejected',()=>{assert.equal(road.getAttribute('aria-invalid'),'true');assert.equal(R.getJobTotals().roadToHosp,35)});
+ editRoad('50');R.refresh([174.76,-36.85],{...auto,hospitalId:'other'});
+ check('destination change clears road override',()=>assert.equal(R.getJobTotals().roadToHosp,30));
+ editRoad('50');R.refresh({lat:-44,lng:170},{...auto,hospitalId:'other'});
+ check('scene change clears road override',()=>assert.equal(R.getJobTotals().roadToHosp,30));
+ eta.value='';R.refresh([174.76,-36.85],auto);check('missing road ETA does not become zero',()=>assert.equal(R.getJobTotals().roadTotal,null));
+ eta.value='12';R.refresh([174.76,-36.85],{...auto,roadToHosp:null});check('missing route does not produce complete road total',()=>assert.equal(R.getJobTotals().roadTotal,null));
+ R.reset();check('reset removes previous calculation',()=>assert.equal(R.getJobTotals(),null));A.ui.closeModal();
+ const originalCompare=A.primary.hospitalCompare;
+ const hospitalName=d.getElementById('primary-hospital-name'),originalName=hospitalName.textContent;
+ hospitalName.textContent='Timaru ED';
+ A.primary.hospitalCompare={getCompareList:()=>[{id:'t',name:'Timaru ED'},{id:'c',name:'Christchurch ED'}]};
+ check('CAD destination lists comparison once with selected first',()=>assert.match(A.primary.cad.buildCadNotes(),/Destination: Timaru ED \/ Christchurch ED\n/));
+ A.primary.hospitalCompare={getCompareList:()=>[]};
+ check('CAD single destination unchanged',()=>assert.match(A.primary.cad.buildCadNotes(),/Destination: Timaru ED\n/));
+ A.primary.hospitalCompare=originalCompare;hospitalName.textContent=originalName;
+ const button=d.createElement('button'),icon=d.createElement('span');icon.textContent='icon';button.append(icon);d.body.append(button);
+ A.ui.feedback.setBusy(button,true,'Preparing');A.ui.feedback.setBusy(button,false);check('busy feedback preserves original nodes',()=>{assert.equal(button.firstChild,icon);assert.equal(button.hasAttribute('aria-busy'),false)});
+ A.ui.feedback.flashLabel(button,'Copied',500);A.ui.feedback.flashLabel(button,'Copied again',500);await new Promise(r=>setTimeout(r,550));check('repeated feedback restores original content',()=>assert.equal(button.firstChild,icon));
+ // Clipboard failures remain retryable; concurrent taps perform one write.
+ let writes=0,finishWrite;
+ Object.defineProperty(w.navigator,'clipboard',{configurable:true,value:{writeText:()=>{writes++;return new Promise(resolve=>{finishWrite=resolve})}}});
+ const copying=A.ui.feedback.copy(button,'test document');
+ check('copy announces busy state',()=>assert.equal(button.getAttribute('aria-busy'),'true'));
+ await A.ui.feedback.copy(button,'duplicate');
+ check('concurrent copy taps perform one write',()=>assert.equal(writes,1));
+ finishWrite();assert.equal(await copying,true);
+ check('copy success clears busy state',()=>assert.equal(button.hasAttribute('aria-busy'),false));
+ await new Promise(r=>setTimeout(r,1650));
+ check('copy success restores original nodes',()=>assert.equal(button.firstChild,icon));
+ w.navigator.clipboard.writeText=async()=>{throw new Error('Clipboard denied')};
+ d.execCommand=()=>false;
+ assert.equal(await A.ui.feedback.copy(button,'test document'),false);
+ check('copy failure is announced',()=>{assert.equal(button.textContent,'Copy failed');assert.match(d.getElementById('airdesk-action-toast').textContent,/copy it manually/)});
+ w.navigator.clipboard.writeText=async()=>{writes++};
+ assert.equal(await A.ui.feedback.copy(button,'retry'),true);
+ check('failed copy can be retried',()=>assert.equal(button.textContent,'Copied'));
+ await new Promise(r=>setTimeout(r,1650));
+ check('retry preserves original content',()=>assert.equal(button.firstChild,icon));
+ for(const [prefix,field,tab] of [['primary-clinical-notes','primary-clinical-notes','primary'],['iht-clinician','iht-clinician-name','iht']]){
+   d.querySelector(`[role="tab"][aria-controls="screen-${tab}"]`)?.click();
+   const add=d.getElementById(prefix+'-add'),remove=d.getElementById(prefix+'-delete'),wrap=d.getElementById(prefix+'-wrap');
+   add.click();
+   check(prefix+' opens and focuses field',()=>{assert.equal(add.getAttribute('aria-expanded'),'true');assert.equal(wrap.hidden,false);assert.equal(d.activeElement,d.getElementById(field))});
+   d.getElementById(field).value='Temporary';remove.click();
+   check(prefix+' delete returns focus',()=>{assert.equal(add.getAttribute('aria-expanded'),'false');assert.equal(wrap.hidden,true);assert.equal(d.activeElement,add);assert.equal(d.getElementById(field).value,'')});
+ }
+ button.focus();A.primary.clinicalNotes.reset();A.transfer.cad.reset();
+ check('programmatic resets do not steal focus',()=>assert.equal(d.activeElement,button));
+ // Icon-only controls retain their geometry and still report clipboard failures.
+ w.navigator.clipboard.writeText=async()=>{throw new Error('Clipboard denied')};d.execCommand=()=>false;
+ await A.ui.feedback.copy(button,'coordinates',{preserveLabel:true});
+ check('icon copy failure retains icon and announces recovery',()=>{assert.equal(button.firstChild,icon);assert.match(d.getElementById('airdesk-action-toast').textContent,/copy it manually/)});
+ const generate=d.querySelector('[data-generate-msg]');
+ assert.ok(generate);generate.click();await new Promise(r=>setTimeout(r,20));
+ const preview=d.getElementById(generate.dataset.generateMsg),output=d.getElementById(generate.dataset.generateMsg+'-out');
+ check('failed SAR copy exposes generated text for manual recovery',()=>{assert.equal(output.hidden,false);assert.ok(preview.textContent.trim().length>0)});
+ w.navigator.clipboard.writeText=async()=>{};generate.click();await new Promise(r=>setTimeout(r,20));
+ check('SAR copy retry succeeds and closes recovery preview',()=>assert.equal(output.hidden,true));
+ // Secondary-panel consistency and accessible skill selection.
+ const water=d.querySelector('[data-generate-msg="water-amb-pol"]');
+ assert.ok(water);w.navigator.clipboard.writeText=async()=>{throw new Error('Denied')};
+ water.click();await new Promise(r=>setTimeout(r,20));
+ check('Water SAR failed copy retains manual message',()=>{assert.equal(d.getElementById('water-amb-pol-out').hidden,false);assert.ok(d.getElementById('water-amb-pol').textContent.length>0)});
+ w.navigator.clipboard.writeText=async()=>{};water.click();await new Promise(r=>setTimeout(r,20));
+ check('Water SAR retry hides recovery output',()=>assert.equal(d.getElementById('water-amb-pol-out').hidden,true));
+ d.querySelector('[data-modal="clinical-advice"], [data-document-id="clinical-advice"]').click();
+ const advice=d.getElementById('ca-copy');assert.ok(advice);
+ d.getElementById('ca-history').value='Test history';d.getElementById('ca-advice').value='Test advice';
+ w.navigator.clipboard.writeText=async()=>{throw new Error('Denied')};advice.click();await new Promise(r=>setTimeout(r,20));
+ check('Clinical Advice reports copy failure with recovery guidance',()=>{assert.equal(advice.textContent,'Copy failed');assert.match(d.getElementById('airdesk-action-toast').textContent,/manually/)});
+ let copiedAdvice='';w.navigator.clipboard.writeText=async text=>{copiedAdvice=text};advice.click();await new Promise(r=>setTimeout(r,20));
+ check('Clinical Advice retry preserves generated content',()=>{assert.equal(advice.textContent,'Copied');assert.match(copiedAdvice,/Clinical History: Test history/);assert.match(copiedAdvice,/Advice: Test advice/)});
+ await new Promise(r=>setTimeout(r,1650));
+ check('Clinical Advice restores its original action label',()=>assert.equal(advice.textContent,'Create CAD Notes'));
+ A.ui.closeModal();
+ for(const id of ['primary-skill-pills','primary-transport-pills']){
+   const pills=[...d.querySelectorAll('#'+id+' button')];pills[0].click();pills[1].click();
+   check(id+' exposes only selected pill as pressed',()=>{assert.equal(pills[0].getAttribute('aria-pressed'),'false');assert.equal(pills[1].getAttribute('aria-pressed'),'true')});
+   pills[1].click();check(id+' deselection clears pressed state',()=>assert.ok(pills.every(p=>p.getAttribute('aria-pressed')==='false')));
+ }
+ d.querySelector('[data-modal="system-status"]').click();
+ check('System Status displays canonical build identifier',()=>assert.equal(d.getElementById('system-build-id').textContent,A.meta.buildId));A.ui.closeModal();
+ A.health.set('tracplus','ok');A.health.set('heli','live');A.health.set('notes','connecting');A.health.set('maps','ready');
+ d.getElementById('airdesk-health-chip').click();
+ check('Desk Status shows build on the phone-accessible status panel',()=>assert.equal(d.getElementById('desk-build-id').textContent,A.meta.buildId));
+ check('unconfirmed services never claim all feeds live',()=>{assert.match(d.getElementById('modal-body').textContent,/Connecting to services/);assert.doesNotMatch(d.getElementById('modal-body').textContent,/All feeds live/)});A.ui.closeModal();
+ // Stub geometry only; exercise the application's actual keyboard handler.
+ const rects=w.HTMLElement.prototype.getClientRects;
+ w.HTMLElement.prototype.getClientRects=function(){return this.closest('[hidden]')?[]:[{width:10,height:10}]};
+ button.focus();
+ A.ui.showModal('Keyboard review','<button id="keyboard-first">First</button><button tabindex="-1">Excluded</button><button id="keyboard-last">Last</button>',button);
+ const modal=d.getElementById('modal'),close=d.getElementById('modal-close'),last=d.getElementById('keyboard-last');
+ last.focus();last.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Tab',bubbles:true,cancelable:true}));
+ check('dialog Tab wraps to first control',()=>assert.equal(d.activeElement,close));
+ close.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Tab',shiftKey:true,bubbles:true,cancelable:true}));
+ check('dialog Shift Tab wraps to last control',()=>assert.equal(d.activeElement,last));
+ last.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
+ check('Escape closes dialog and returns focus',()=>{assert.equal(modal.hidden,true);assert.equal(d.activeElement,button)});
+ w.HTMLElement.prototype.getClientRects=rects;
+ console.log(`All ${count} workflow checks passed (DOM simulation, no live services)`);
+}finally{dom.window.close()}

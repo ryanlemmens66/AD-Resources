@@ -1,0 +1,26 @@
+{
+  "name": "airdesk",
+  "version": "6.2.0",
+  "private": true,
+  "description": "Single-file operational desk tool for the Hato Hone St John National Air Desk (New Zealand).",
+  "type": "module",
+  "scripts": {
+    "check": "node tools/check.mjs",
+    "verify": "node tools/verify.mjs",
+    "test": "node tools/check.mjs && node tools/verify.mjs && node tools/workflow-check.mjs && node tools/unit-check.mjs",
+    "browser": "node tools/browser-check.mjs",
+    "test:all": "npm test && npm run browser",
+    "visual:baseline": "node tools/visual-check.mjs baseline",
+    "visual:compare": "node tools/visual-check.mjs compare",
+    "guidance": "node tools/guidance-compare.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
+    "jsdom": "^24.0.0",
+    "pdfjs-dist": "^4.10.38"
+  }
+}

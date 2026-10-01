@@ -1,0 +1,131 @@
+# AirDesk — Netlify deployment configuration.
+#
+# The versioned HTML file stays the single source of truth. Nothing here
+# patches the app; this file only supplies what a static host has to provide
+# around it: a servable root, the same-origin NZTA proxy the app expects, and
+# baseline response headers.
+#
+# On a version bump, update both rewrite targets below — and only those.
+# tools/check.mjs fails the build if either still points at the old filename.
+
+# The local release gate is `npm run test:all` before the versioned ZIP is
+# created. This build command is an additional dependency-free safeguard only
+# on Netlify deploy paths that actually invoke a build. Manual upload behaviour
+# varies by path, so do not assume Netlify has run this command unless the
+# deploy log shows it. A build that does run this command and fails will not
+# publish.
+#
+# check.mjs and not `npm test` is deliberate: the deploy-side safeguard stays
+# dependency-free. jsdom and browser verification remain part of the local
+# `npm run test:all` gate. Delete the command line to go back to no build.
+[build]
+  publish = "."
+  command = "node tools/check.mjs"
+
+# Serve the desk at "/". The HTML file is versioned rather than named
+# index.html, so without these the site root is a 404 and the desk is only
+# reachable at its full filename.
+# publish = "." serves every file in the package. Keep the maintainer files
+# (documentation, tools and package metadata)
+# off the public site -- they stay in the ZIP. Only the app HTML, sw.js and the
+# NZTA proxy below need to be reachable.
+[[redirects]]
+  from = "/tools/*"
+  to = "/404-not-published"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/README.md"
+  to = "/404-not-published"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/CHANGELOG.md"
+  to = "/404-not-published"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/ARCHITECTURE.md"
+  to = "/404-not-published"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/NOTICE.md"
+  to = "/404-not-published"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package.json"
+  to = "/404-not-published"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/package-lock.json"
+  to = "/404-not-published"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/netlify.toml"
+  to = "/404-not-published"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/"
+  to = "/AirDesk-v6.2.html"
+  status = 200
+
+[[redirects]]
+  from = "/index.html"
+  to = "/AirDesk-v6.2.html"
+  status = 200
+
+# Same-origin proxy for the NZTA Journeys delays cache.
+#
+# #airdesk-nzta tries the ArcGIS FeatureServer first, then falls back to
+# "/airdesk-nzta-delays.json", then to the Journeys URL direct. That direct
+# call is CORS-locked, so this rewrite is the only fallback that can actually
+# succeed. Without it the road-warnings layer silently stays empty whenever the
+# FeatureServer is unavailable.
+[[redirects]]
+  from = "/airdesk-nzta-delays.json"
+  to = "https://www.journeys.nzta.govt.nz/assets/map-data-cache/delays.json"
+  status = 200
+  force = true
+
+[[headers]]
+  for = "/*"
+
+  [headers.values]
+    # Both the HTML and sw.js must revalidate on every load. A stale worker
+    # cannot replace itself, so a long max-age on /sw.js is the one mistake
+    # that pins an old build on the desk until site data is cleared -- which
+    # is exactly what the version chip and its check exist to prevent.
+    Cache-Control = "public, max-age=0, must-revalidate"
+    X-Content-Type-Options = "nosniff"
+    # The desk is a restricted clinical workstation and is never framed.
+    # Duplicates CSP frame-ancestors below, kept for pre-CSP browsers.
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # Scene-location lookup uses navigator.geolocation on this origin only.
+    Permissions-Policy = "geolocation=(self), camera=(), microphone=(), payment=(), usb=()"
+    # Content Security Policy, ENFORCED (2026-09-14). Every CSP-governed
+    # resource type was audited against the file before the switch, not just
+    # connect-src -- see README production acceptance record for what was checked and what
+    # was not. The origin list mirrors
+    # AirDesk.services.catalog in the HTML plus the vendor libraries it loads;
+    # when an endpoint is added there, add it here. tools/check.mjs checks
+    # connect-src coverage on every build.
+    #   script-src  inline app modules; Firebase compat from gstatic; Google
+    #               Maps JS (elevation); *.firebasedatabase.app covers the
+    #               RTDB long-poll fallback, which injects <script> tags.
+    #               No 'unsafe-eval': the app has no eval or new Function.
+    #   worker-src  MapLibre spawns its tile workers from a blob: URL.
+    #   connect-src every fetch/XHR/WebSocket target, including the Netlify
+    #               NZTA proxy on this origin.
+    #   frame-src   Windy embeds (Scene Weather and Board View weather).
+    # To roll back, rename this header to Content-Security-Policy-Report-Only.
+    # A blocked origin fails silently in the UI, so that is the first thing to
+    # try if a layer or embed goes empty after a deploy.
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://maps.googleapis.com https://maps.gstatic.com https://*.firebasedatabase.app; worker-src 'self' blob:; child-src 'self' blob: https://embed.windy.com; frame-src 'self' https://embed.windy.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://basemaps.linz.govt.nz https://maps.googleapis.com https://maps.gstatic.com https://*.googleapis.com https://*.gstatic.com; connect-src 'self' https://basemaps.linz.govt.nz https://data.linz.govt.nz https://routes.googleapis.com https://maps.googleapis.com https://weather.googleapis.com https://nominatim.openstreetmap.org https://services.arcgis.com https://www.journeys.nzta.govt.nz https://tracplusfeed.ryan-lemmens.workers.dev https://*.firebasedatabase.app wss://*.firebasedatabase.app https://www.gstatic.com"
