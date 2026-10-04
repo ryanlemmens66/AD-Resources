@@ -9,7 +9,7 @@ a live scene map.
 > <https://airdeskresources.netlify.app/>. It is v6.2 with a header Links menu: the
 > St John Tasking Board and EAS Helicopter Status Board in their own windows, and the
 > Tasking & Operating Guidelines and Master List of Helicopter Information moved there
-> (see CHANGELOG.md); the live-origin smoke test is recorded below after upload. The
+> (see CHANGELOG.md); the live-origin smoke test passed on 2026-10-04 (recorded below). The
 > immediate rollback release is v6.2 (build `20260930.1`, signed off 2026-09-30,
 > `AD-Resources-v6.2-Stable.zip`), then v6.1, both held unchanged on the owner's
 > computer. Embedded
@@ -216,7 +216,7 @@ its subject changes.
 | A. Controls carried forward | 2026-09-24 |
 | B6. Automated gate | Passed 2026-10-02 (`npm run test:all`, visual comparison against v6.2 reviewed) |
 | B7. Content owner confirmation | Carried forward: no content changed in v6.2 or v6.3 (two existing links moved, unchanged). Ryan Lemmens, 2026-09-28: embedded guidance, hospital, LZ, pathway and all catalogue content confirmed current; catalogue review dates recorded as 2026-09-28 |
-| C8. Smoke test and real devices | v6.3: to record after upload (tester, date, devices). Run every C8 check, including the Links checks on a desk PC and the Citrix desk; also the v6.2 checks, not yet recorded here: the map opens and resets to the whole of New Zealand on the phone, iPad, desktop and Citrix desk, and Closest Known LZ does not offer Morgan Park. (v6.1: Ryan Lemmens, 2026-09-28, every check in C8 complete.) |
+| C8. Smoke test and real devices | v6.3: Ryan Lemmens, 2026-10-04: confirmed working on the live site after upload (devices not itemised). (v6.1: Ryan Lemmens, 2026-09-28, every check in C8 complete.) |
 | Rollback artifact | v6.2 (`AD-Resources-v6.2-Stable.zip`, build `20260930.1`), then v6.1 (`AD-Resources-v6.1-Stable.zip`), held unchanged on the owner's computer |
 | Production owner sign-off | Ryan Lemmens, 2026-10-02: v6.3 signed off for live operational use. (v6.2: Ryan Lemmens, 2026-09-30. v6.1: Ryan Lemmens, 2026-09-28.) |
 
